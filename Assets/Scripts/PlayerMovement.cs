@@ -6,16 +6,20 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D body;
     private SpriteRenderer spriteRenderer;
     private Animator anim;
-    private bool isGrounded;
+    private BoxCollider2D boxCollider;
+
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask wallLayer;
 
     public float speed = 5f;
-    public float jumpForce = 6f;
+    public float jumpForce = 10f;
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        boxCollider = GetComponent<BoxCollider2D>();
 
         body.freezeRotation = true;
     }
@@ -40,36 +44,46 @@ public class PlayerMovement : MonoBehaviour
         body.linearVelocity = new Vector2(horizontal * speed, body.linearVelocity.y);
 
         // Jump
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
+        if (Keyboard.current.spaceKey.wasPressedThisFrame && IsGrounded())
         {
             Jump();
         }
 
-        // Run animation
+        // Animations
         anim.SetBool("run", horizontal != 0);
-        // jump animation
-        anim.SetBool("grounded", isGrounded);
+        anim.SetBool("grounded", IsGrounded());
     }
 
     private void Jump()
     {
         body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
-        isGrounded = false;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private bool IsGrounded()
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
+        RaycastHit2D hit = Physics2D.BoxCast(
+            boxCollider.bounds.center,
+            boxCollider.bounds.size,
+            0f,
+            Vector2.down,
+            0.1f,
+            groundLayer
+        );
+
+        return hit.collider != null;
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private bool IsTouchingWall()
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
+        RaycastHit2D hit = Physics2D.BoxCast(
+            boxCollider.bounds.center,
+            boxCollider.bounds.size,
+            0f,
+            spriteRenderer.flipX ? Vector2.left : Vector2.right,
+            0.1f,
+            wallLayer
+        );
+
+        return hit.collider != null;
     }
 }
