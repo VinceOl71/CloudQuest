@@ -14,6 +14,10 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 5f;
     public float jumpForce = 10f;
 
+    private float horizontal;
+    private bool jumpPressed;
+    private bool grounded;
+
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
@@ -26,12 +30,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        float horizontal = 0f;
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null)
+            return;
 
-        if (Keyboard.current.aKey.isPressed)
+        horizontal = 0f;
+
+        if (keyboard.aKey.isPressed)
             horizontal = -1f;
 
-        if (Keyboard.current.dKey.isPressed)
+        if (keyboard.dKey.isPressed)
             horizontal = 1f;
 
         // Flip sprite
@@ -40,18 +48,33 @@ public class PlayerMovement : MonoBehaviour
             spriteRenderer.flipX = horizontal < 0;
         }
 
+        // Hold the press until the next physics step so it is never dropped
+        // on a frame where FixedUpdate does not run
+        if (keyboard.spaceKey.wasPressedThisFrame)
+            jumpPressed = true;
+
+        // Animations
+        anim.SetBool("run", horizontal != 0);
+        anim.SetBool("grounded", grounded);
+    }
+
+    private void FixedUpdate()
+    {
+        grounded = IsGrounded();
+
         // Move player
         body.linearVelocity = new Vector2(horizontal * speed, body.linearVelocity.y);
 
         // Jump
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && IsGrounded())
+        if (jumpPressed)
         {
-            Jump();
-        }
+            if (grounded)
+            {
+                Jump();
+            }
 
-        // Animations
-        anim.SetBool("run", horizontal != 0);
-        anim.SetBool("grounded", IsGrounded());
+            jumpPressed = false;
+        }
     }
 
     private void Jump()
@@ -61,9 +84,15 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
+        Bounds bounds = boxCollider.bounds;
+
+        // Slightly narrower than the collider so the cast cannot catch a wall
+        // the player is pressed up against
+        Vector2 size = new Vector2(bounds.size.x * 0.9f, bounds.size.y);
+
         RaycastHit2D hit = Physics2D.BoxCast(
-            boxCollider.bounds.center,
-            boxCollider.bounds.size,
+            bounds.center,
+            size,
             0f,
             Vector2.down,
             0.1f,
