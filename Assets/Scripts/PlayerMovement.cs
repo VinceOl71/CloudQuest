@@ -62,8 +62,18 @@ public class PlayerMovement : MonoBehaviour
     {
         grounded = IsGrounded();
 
+        float move = horizontal;
+
+        // Holding a direction into a wall in mid-air is what supplies the
+        // normal force that friction needs, which pins the player to the wall.
+        // Dropping the input that pushes into it lets them fall instead.
+        if (!grounded && move != 0f && IsTouchingWall(move))
+        {
+            move = 0f;
+        }
+
         // Move player
-        body.linearVelocity = new Vector2(horizontal * speed, body.linearVelocity.y);
+        body.linearVelocity = new Vector2(move * speed, body.linearVelocity.y);
 
         // Jump
         if (jumpPressed)
@@ -102,15 +112,21 @@ public class PlayerMovement : MonoBehaviour
         return hit.collider != null;
     }
 
-    private bool IsTouchingWall()
+    private bool IsTouchingWall(float direction)
     {
+        Bounds bounds = boxCollider.bounds;
+
+        // A thin box down the player's side, kept clear of their feet so the
+        // floor they are standing on never counts as a wall
+        Vector2 size = new Vector2(0.05f, bounds.size.y * 0.9f);
+
         RaycastHit2D hit = Physics2D.BoxCast(
-            boxCollider.bounds.center,
-            boxCollider.bounds.size,
+            bounds.center,
+            size,
             0f,
-            spriteRenderer.flipX ? Vector2.left : Vector2.right,
-            0.1f,
-            wallLayer
+            direction < 0f ? Vector2.left : Vector2.right,
+            bounds.extents.x + 0.05f,
+            groundLayer.value | wallLayer.value
         );
 
         return hit.collider != null;
