@@ -14,9 +14,26 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 5f;
     public float jumpForce = 10f;
 
+    [Header("Jump feel")]
+    [Tooltip("How long after walking off a ledge a jump still counts.")]
+    [SerializeField] private float coyoteTime = 0.1f;
+
+    [Tooltip("How long before landing a jump press is remembered, so it fires on touchdown instead of being swallowed.")]
+    [SerializeField] private float jumpBufferTime = 0.1f;
+
+    [Tooltip("Share of upward speed kept when jump is released early. 0 cuts the jump dead, 1 turns variable height off.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float jumpCutMultiplier = 0.5f;
+
     private float horizontal;
-    private bool jumpPressed;
+    private bool jumpHeld;
     private bool grounded;
+
+    private float coyoteCounter;
+    private float jumpBufferCounter;
+
+    // Starts spent, so nothing is trimmed before the first jump happens
+    private bool jumpCut = true;
 
     private void Awake()
     {
@@ -32,7 +49,11 @@ public class PlayerMovement : MonoBehaviour
     {
         Keyboard keyboard = Keyboard.current;
         if (keyboard == null)
+        {
+            horizontal = 0f;
+            jumpHeld = false;
             return;
+        }
 
         horizontal = 0f;
 
@@ -48,10 +69,12 @@ public class PlayerMovement : MonoBehaviour
             spriteRenderer.flipX = horizontal < 0;
         }
 
-        // Hold the press until the next physics step so it is never dropped
-        // on a frame where FixedUpdate does not run
+        // Remember the press for a moment. Reading the press here rather than
+        // the held state is what stops a held key turning into repeat jumps.
         if (keyboard.spaceKey.wasPressedThisFrame)
-            jumpPressed = true;
+            jumpBufferCounter = jumpBufferTime;
+
+        jumpHeld = keyboard.spaceKey.isPressed;
 
         // Animations
         anim.SetBool("run", horizontal != 0);
@@ -61,6 +84,10 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         grounded = IsGrounded();
+
+        // Walking off a ledge opens a grace period rather than ending the jump outright
+        coyoteCounter = grounded ? coyoteTime : coyoteCounter - Time.fixedDeltaTime;
+        jumpBufferCounter -= Time.fixedDeltaTime;
 
         float move = horizontal;
 
@@ -76,20 +103,28 @@ public class PlayerMovement : MonoBehaviour
         body.linearVelocity = new Vector2(move * speed, body.linearVelocity.y);
 
         // Jump
-        if (jumpPressed)
+        if (jumpBufferCounter > 0f && coyoteCounter > 0f)
         {
-            if (grounded)
-            {
-                Jump();
-            }
+            Jump();
 
-            jumpPressed = false;
+            // Spend both, so a single press cannot become a second jump
+            jumpBufferCounter = 0f;
+            coyoteCounter = 0f;
+        }
+
+        // Letting go on the way up trims the arc, turning a tap into a short hop
+        if (!jumpHeld && !jumpCut && body.linearVelocity.y > 0f)
+        {
+            body.linearVelocity = new Vector2(body.linearVelocity.x,
+                                              body.linearVelocity.y * jumpCutMultiplier);
+            jumpCut = true;
         }
     }
 
     private void Jump()
     {
         body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
+        jumpCut = false;
     }
 
     private bool IsGrounded()
