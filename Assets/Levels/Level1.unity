@@ -670,8 +670,6 @@ MonoBehaviour:
   coyoteTime: 0.1
   jumpBufferTime: 0.1
   jumpCutMultiplier: 0.5
-  fallGravityMultiplier: 1.6
-  maxFallSpeed: 20
 --- !u!95 &1497405373
 Animator:
   serializedVersion: 7
