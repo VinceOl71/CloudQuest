@@ -25,6 +25,12 @@ public class PlayerMovement : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float jumpCutMultiplier = 0.5f;
 
+    [Tooltip("Gravity is multiplied by this while falling. A symmetrical arc reads as floaty, so the way down is made quicker than the way up.")]
+    [SerializeField] private float fallGravityMultiplier = 1.6f;
+
+    [Tooltip("Fastest the player may fall, in units per second. A safety net for tall drops rather than something the current level reaches.")]
+    [SerializeField] private float maxFallSpeed = 20f;
+
     private float horizontal;
     private bool jumpHeld;
     private bool grounded;
@@ -118,6 +124,20 @@ public class PlayerMovement : MonoBehaviour
             body.linearVelocity = new Vector2(body.linearVelocity.x,
                                               body.linearVelocity.y * jumpCutMultiplier);
             jumpCut = true;
+        }
+
+        // Unity applies the base gravity itself during the step, so only the
+        // difference is added here, and only on the way down
+        if (!grounded && body.linearVelocity.y < 0f)
+        {
+            float extra = Physics2D.gravity.y * body.gravityScale
+                          * (fallGravityMultiplier - 1f) * Time.fixedDeltaTime;
+            body.linearVelocity += Vector2.up * extra;
+        }
+
+        if (body.linearVelocity.y < -maxFallSpeed)
+        {
+            body.linearVelocity = new Vector2(body.linearVelocity.x, -maxFallSpeed);
         }
     }
 
