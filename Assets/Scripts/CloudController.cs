@@ -59,11 +59,15 @@ namespace CloudQuest
                 return;
             }
 
-            if (keyboard.digit1Key.wasPressedThisFrame) TryForm(CloudType.Cumulus);
-            if (keyboard.digit2Key.wasPressedThisFrame) TryForm(CloudType.Stratus);
-            if (keyboard.digit3Key.wasPressedThisFrame) TryForm(CloudType.Cirrus);
-            if (keyboard.eKey.wasPressedThisFrame)      TryGrowNearest();
-            if (keyboard.qKey.wasPressedThisFrame)      TryRemoveNearest();
+            // Number keys follow the order the clouds were taught, so key 1 is
+            // always the first cloud the learner met rather than a fixed type
+            System.Collections.Generic.IList<CloudType> keys = FormableClouds();
+            if (keys.Count > 0 && keyboard.digit1Key.wasPressedThisFrame) TryForm(keys[0]);
+            if (keys.Count > 1 && keyboard.digit2Key.wasPressedThisFrame) TryForm(keys[1]);
+            if (keys.Count > 2 && keyboard.digit3Key.wasPressedThisFrame) TryForm(keys[2]);
+
+            if (keyboard.eKey.wasPressedThisFrame) TryGrowNearest();
+            if (keyboard.qKey.wasPressedThisFrame) TryRemoveNearest();
         }
 
         /// <summary>
@@ -155,6 +159,27 @@ namespace CloudQuest
 
             if (CloudsChanged != null) CloudsChanged();
             return true;
+        }
+
+        /// <summary>
+        /// The clouds this level lets the learner place directly, in the order
+        /// they were taught. Drives the number keys and what the HUD lists.
+        /// </summary>
+        public System.Collections.Generic.IList<CloudType> FormableClouds()
+        {
+            System.Collections.Generic.List<CloudType> formable =
+                new System.Collections.Generic.List<CloudType>();
+
+            int upto = progress != null ? progress.Level : CloudCurriculum.LevelCount;
+            foreach (CloudType type in CloudCurriculum.AvailableAt(upto))
+            {
+                if (CloudScience.CanFormDirectly(type))
+                {
+                    formable.Add(type);
+                }
+            }
+
+            return formable;
         }
 
         /// <summary>Clouds currently in the level, for a puzzle to inspect.</summary>
