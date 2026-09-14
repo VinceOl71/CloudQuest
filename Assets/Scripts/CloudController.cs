@@ -27,6 +27,10 @@ namespace CloudQuest
         [Tooltip("World Y below which the sky counts as middle level; above it is high level.")]
         [SerializeField] private float middleBandCeiling = 5f;
 
+        [Header("Progression")]
+        [Tooltip("Limits the learner to the clouds this level has taught. Leave empty to allow every type.")]
+        [SerializeField] private LevelProgress progress;
+
         [Header("Selection")]
         [Tooltip("Radius searched for the cloud a grow or clear key acts on.")]
         [SerializeField] private float reachRadius = 6f;
@@ -86,6 +90,12 @@ namespace CloudQuest
                 return false;
             }
 
+            // and only ones this level has taught
+            if (!IsTaught(type))
+            {
+                return false;
+            }
+
             Vector2 point = PlacementPoint();
 
             // A cloud only forms at the height its type belongs to
@@ -112,6 +122,12 @@ namespace CloudQuest
 
             foreach (CloudType target in CloudScience.TransformationsFrom(cloud.Type))
             {
+                // a cloud cannot be grown into one the learner has not met yet
+                if (!IsTaught(target))
+                {
+                    continue;
+                }
+
                 if (cloud.TryTransformTo(target))
                 {
                     if (CloudsChanged != null) CloudsChanged();
@@ -141,6 +157,12 @@ namespace CloudQuest
         public System.Collections.Generic.IList<Cloud> ActiveClouds()
         {
             return clouds;
+        }
+
+        /// <summary>With no LevelProgress assigned, every cloud is allowed.</summary>
+        private bool IsTaught(CloudType type)
+        {
+            return progress == null || progress.Allows(type);
         }
 
         private Cloud NearestCloud()

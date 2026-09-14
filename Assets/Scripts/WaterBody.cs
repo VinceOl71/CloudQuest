@@ -19,6 +19,12 @@ namespace CloudQuest
         [Tooltip("Rise at or above which the level counts as full, for a puzzle to check.")]
         [SerializeField] private float fullThreshold = 3.5f;
 
+        [Tooltip("Rise at or above which the route is flooded and cannot be waded.")]
+        [SerializeField] private float floodDepth = 2.5f;
+
+        [Tooltip("Layers that can drown in deep water.")]
+        [SerializeField] private LayerMask swimmerMask = ~0;
+
         private SpriteRenderer spriteRenderer;
         private BoxCollider2D box;
         private float baseHeight;
@@ -30,6 +36,9 @@ namespace CloudQuest
         public float Rise { get { return rise; } }
 
         public bool IsFull { get { return rise >= fullThreshold; } }
+
+        /// <summary>Deep enough that the route through it is closed.</summary>
+        public bool IsFlooded { get { return rise >= floodDepth; } }
 
         private void Awake()
         {
@@ -58,6 +67,31 @@ namespace CloudQuest
 
             rise = Mathf.Clamp(rise, 0f, maxRise);
             ApplyLevel();
+            DrownAnyoneIn();
+        }
+
+        /// <summary>
+        /// Shallow water is waded through; once it is deep enough the route is
+        /// flooded, which is what makes over-watering a level a mistake rather
+        /// than simply slower.
+        /// </summary>
+        private void DrownAnyoneIn()
+        {
+            if (!IsFlooded)
+            {
+                return;
+            }
+
+            Bounds area = spriteRenderer.bounds;
+            Collider2D[] hits = Physics2D.OverlapBoxAll(area.center, area.size, 0f, swimmerMask);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                PlayerRespawn caught = hits[i].GetComponent<PlayerRespawn>();
+                if (caught != null)
+                {
+                    caught.Respawn();
+                }
+            }
         }
 
         /// <summary>
