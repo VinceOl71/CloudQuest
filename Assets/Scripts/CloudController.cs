@@ -21,11 +21,14 @@ namespace CloudQuest
         [SerializeField] private int maxClouds = 3;
 
         [Header("Altitude bands")]
-        [Tooltip("World Y below which the sky counts as low level.")]
-        [SerializeField] private float lowBandCeiling = 2f;
+        [Tooltip("Height low cloud forms at.")]
+        [SerializeField] private float lowBandY = 1f;
 
-        [Tooltip("World Y below which the sky counts as middle level; above it is high level.")]
-        [SerializeField] private float middleBandCeiling = 5f;
+        [Tooltip("Height middle cloud forms at.")]
+        [SerializeField] private float middleBandY = 3f;
+
+        [Tooltip("Height high cloud forms at.")]
+        [SerializeField] private float highBandY = 5f;
 
         [Header("Progression")]
         [Tooltip("Limits the learner to the clouds this level has taught. Leave empty to allow every type.")]
@@ -63,18 +66,26 @@ namespace CloudQuest
             if (keyboard.qKey.wasPressedThisFrame)      TryRemoveNearest();
         }
 
-        /// <summary>Where a new cloud would go: ahead of the player, at their facing.</summary>
-        public Vector2 PlacementPoint()
+        /// <summary>
+        /// Where a new cloud goes: ahead of the player, at the height its own
+        /// type belongs to. Cirrus appears far overhead and stratus close to
+        /// the ground, so the learner sees the altitude of each type rather
+        /// than having to have climbed to it first.
+        /// </summary>
+        public Vector2 PlacementPoint(CloudType type)
         {
             float facing = (spriteRenderer != null && spriteRenderer.flipX) ? -1f : 1f;
-            return new Vector2(transform.position.x + placeAhead * facing, transform.position.y);
+            return new Vector2(transform.position.x + placeAhead * facing, HeightOf(type));
         }
 
-        public AltitudeBand BandAt(float worldY)
+        public float HeightOf(CloudType type)
         {
-            if (worldY < lowBandCeiling)    return AltitudeBand.Low;
-            if (worldY < middleBandCeiling) return AltitudeBand.Middle;
-            return AltitudeBand.High;
+            switch (CloudScience.BandOf(type))
+            {
+                case AltitudeBand.High:   return highBandY;
+                case AltitudeBand.Middle: return middleBandY;
+                default:                  return lowBandY;
+            }
         }
 
         public bool TryForm(CloudType type)
@@ -96,14 +107,7 @@ namespace CloudQuest
                 return false;
             }
 
-            Vector2 point = PlacementPoint();
-
-            // A cloud only forms at the height its type belongs to
-            if (BandAt(point.y) != CloudScience.BandOf(type))
-            {
-                return false;
-            }
-
+            Vector2 point = PlacementPoint(type);
             Cloud cloud = Instantiate(cloudPrefab, point, Quaternion.identity);
             cloud.SetType(type);
             clouds.Add(cloud);

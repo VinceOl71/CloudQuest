@@ -1648,7 +1648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45c92ba6d244922b51f1460cd8e794a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloudQuest.LevelProgress
-  level: 1
+  level: 2
 --- !u!114 &800000004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1696,7 +1696,7 @@ GameObject:
   - component: {fileID: 800000008}
   - component: {fileID: 800000009}
   m_Layer: 3
-  m_Name: Platform 11
+  m_Name: Platform 9
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1712,7 +1712,7 @@ Transform:
   m_GameObject: {fileID: 800000006}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11, y: -2.2, z: 0}
+  m_LocalPosition: {x: 9, y: -2.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1838,7 +1838,7 @@ GameObject:
   - component: {fileID: 800000012}
   - component: {fileID: 800000013}
   m_Layer: 3
-  m_Name: Platform 20
+  m_Name: Platform 15.5
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1854,7 +1854,7 @@ Transform:
   m_GameObject: {fileID: 800000010}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20, y: -2.2, z: 0}
+  m_LocalPosition: {x: 15.5, y: -1.0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1980,7 +1980,7 @@ GameObject:
   - component: {fileID: 800000016}
   - component: {fileID: 800000017}
   m_Layer: 3
-  m_Name: Platform 30
+  m_Name: Platform 24
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1996,7 +1996,7 @@ Transform:
   m_GameObject: {fileID: 800000014}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: -2.2, z: 0}
+  m_LocalPosition: {x: 24, y: -2.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2139,7 +2139,7 @@ Transform:
   m_GameObject: {fileID: 800000018}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14, y: -1.02, z: 0}
+  m_LocalPosition: {x: 19, y: -1.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2265,6 +2265,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloudQuest.CloudPresenceGate
   clouds: {fileID: 800000004}
-  required: 0
+  required: 1
   barrier: {fileID: 800000021}
   barrierArt: {fileID: 800000020}

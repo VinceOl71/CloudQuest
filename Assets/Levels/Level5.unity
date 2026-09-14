@@ -1648,7 +1648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45c92ba6d244922b51f1460cd8e794a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloudQuest.LevelProgress
-  level: 1
+  level: 5
 --- !u!114 &800000004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1696,7 +1696,7 @@ GameObject:
   - component: {fileID: 800000008}
   - component: {fileID: 800000009}
   m_Layer: 3
-  m_Name: Platform 11
+  m_Name: Platform 9
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1712,7 +1712,7 @@ Transform:
   m_GameObject: {fileID: 800000006}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11, y: -2.2, z: 0}
+  m_LocalPosition: {x: 9, y: -2.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1838,7 +1838,7 @@ GameObject:
   - component: {fileID: 800000012}
   - component: {fileID: 800000013}
   m_Layer: 3
-  m_Name: Platform 20
+  m_Name: Platform 24
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1854,7 +1854,7 @@ Transform:
   m_GameObject: {fileID: 800000010}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20, y: -2.2, z: 0}
+  m_LocalPosition: {x: 24, y: -2.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1980,7 +1980,7 @@ GameObject:
   - component: {fileID: 800000016}
   - component: {fileID: 800000017}
   m_Layer: 3
-  m_Name: Platform 30
+  m_Name: Platform 31
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1996,7 +1996,7 @@ Transform:
   m_GameObject: {fileID: 800000014}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: -2.2, z: 0}
+  m_LocalPosition: {x: 31, y: -1.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2123,7 +2123,7 @@ GameObject:
   - component: {fileID: 800000021}
   - component: {fileID: 800000022}
   m_Layer: 6
-  m_Name: Gate
+  m_Name: Rock Fall
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2139,7 +2139,7 @@ Transform:
   m_GameObject: {fileID: 800000018}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14, y: -1.02, z: 0}
+  m_LocalPosition: {x: 16, y: -1.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2200,7 +2200,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 0.72, y: 6.56}
+  m_Size: {x: 0.9, y: 6.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2245,12 +2245,12 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 5.12, y: 5.12}
-    newSize: {x: 0.72, y: 6.56}
+    newSize: {x: 0.9, y: 6.56}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.72, y: 6.56}
+  m_Size: {x: 0.9, y: 6.56}
   m_EdgeRadius: 0
 --- !u!114 &800000022
 MonoBehaviour:
@@ -2261,10 +2261,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 800000018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb0a28ef0be145d3b881ae6bce821299, type: 3}
+  m_Script: {fileID: 11500000, guid: cbb5995c8ab04de880e38a86000e3150, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CloudQuest.CloudPresenceGate
-  clouds: {fileID: 800000004}
-  required: 0
-  barrier: {fileID: 800000021}
-  barrierArt: {fileID: 800000020}
+  m_EditorClassIdentifier: Assembly-CSharp::CloudQuest.ErodibleRock
+  rainToErode: 3
+  fadeWhileEroding: 1
