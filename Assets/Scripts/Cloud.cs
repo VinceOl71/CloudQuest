@@ -16,6 +16,13 @@ namespace CloudQuest
         [Tooltip("Layers a cloud may rain on.")]
         [SerializeField] private LayerMask rainMask = ~0;
 
+        [Header("Artwork")]
+        [SerializeField] private Sprite cirrusArt;
+        [SerializeField] private Sprite cumulusArt;
+        [SerializeField] private Sprite stratusArt;
+        [SerializeField] private Sprite nimbostratusArt;
+        [SerializeField] private Sprite cumulonimbusArt;
+
         private SpriteRenderer spriteRenderer;
 
         public CloudType Type { get; private set; }
@@ -34,8 +41,34 @@ namespace CloudQuest
 
             Type = type;
             name = "Cloud (" + CloudScience.DisplayName(type) + ")";
-            spriteRenderer.color = TintFor(type);
-            transform.localScale = ScaleFor(type);
+
+            Sprite art = SpriteFor(type);
+            if (art != null)
+            {
+                // The artwork already carries the shape and shading of the type
+                spriteRenderer.sprite = art;
+                spriteRenderer.color = Color.white;
+            }
+            else
+            {
+                // Nothing assigned yet: fall back to a tint and rough
+                // proportions so the type still reads instead of vanishing
+                spriteRenderer.color = TintFor(type);
+                transform.localScale = ScaleFor(type);
+            }
+        }
+
+        private Sprite SpriteFor(CloudType type)
+        {
+            switch (type)
+            {
+                case CloudType.Cirrus:       return cirrusArt;
+                case CloudType.Cumulus:      return cumulusArt;
+                case CloudType.Stratus:      return stratusArt;
+                case CloudType.Nimbostratus: return nimbostratusArt;
+                case CloudType.Cumulonimbus: return cumulonimbusArt;
+                default:                     return null;
+            }
         }
 
         /// <summary>Grows the cloud, if the science allows that step.</summary>
@@ -78,7 +111,7 @@ namespace CloudQuest
             }
         }
 
-        /// <summary>Placeholder colouring until the cloud artwork exists.</summary>
+        /// <summary>Fallback colouring, used only when no sprite is assigned.</summary>
         private static Color TintFor(CloudType type)
         {
             switch (type)
@@ -93,8 +126,8 @@ namespace CloudQuest
         }
 
         /// <summary>
-        /// Rough proportions, so the shapes read differently before the art
-        /// arrives: cirrus wide and thin, cumulonimbus tall and heavy.
+        /// Fallback proportions, used only when no sprite is assigned: cirrus
+        /// wide and thin, cumulonimbus tall and heavy.
         /// </summary>
         private static Vector3 ScaleFor(CloudType type)
         {
