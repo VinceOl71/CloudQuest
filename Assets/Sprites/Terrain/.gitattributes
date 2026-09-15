@@ -1,0 +1,3 @@
+# Small generated tiles, a few kilobytes each, and this session cannot reach
+# lfs.github.com to upload LFS objects. Plain git blobs suit them better.
+*.png -filter -diff -merge
