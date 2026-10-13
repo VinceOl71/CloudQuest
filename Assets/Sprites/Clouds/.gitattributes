@@ -1,0 +1,4 @@
+# These are small generated sprites, a few kilobytes each, and this session
+# cannot reach lfs.github.com to upload LFS objects. Plain git blobs suit
+# them better than LFS anyway.
+*.png -filter -diff -merge
